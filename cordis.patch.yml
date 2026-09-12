@@ -19,6 +19,12 @@
             displayName: 'Codex (persönlich)'
         transport: sse
         cacheRetention: long
+        # Bild-Eingabe führt diese Route nativ: die Bytes kommen über den
+        # Attachment-Dienst, gehen als pi-ai-`ImageContent` in den Context und
+        # werden von pi-ai als `input_image` serialisiert. Welches Modell
+        # Bilder annimmt, entscheidet der pi-ai-Katalog je Modell — hier wird
+        # nur die Route als Ganzes freigeschaltet.
+        readImages: true
         # Nur Modelle, die ein ChatGPT-Konto wirklich bedient. Der pi-ai-Katalog
         # ist die Obermenge: gpt-5.3-codex-spark, gpt-5.4 und gpt-5.4-mini
         # stehen darin, werden aber mit "is not supported when using Codex with

@@ -18,7 +18,7 @@ anzufassen und ohne eine Zeile am Harness zu ändern.
 | --- | --- |
 | `AccountStore` | `$DSH_HOME/codex-accounts.json` (`0600`, atomar, Dateisperre) hält ein Credential **je Account-Id** — ein persönliches und ein geschäftliches Konto stören sich nicht. |
 | `login` / `import` / `status` / `logout` | Der OAuth-Flow kommt aus `@earendil-works/pi-ai` (PKCE, Callback auf `localhost:1455`, Device-Code). Nichts davon ist nachgebaut. |
-| `CodexAccountAdapter` | Registriert je Konto eine Route als `LlmAdapter` auf `ctx.llm`: Codex-Modelle, Kontextgrößen, Denkstufen. |
+| `CodexAccountAdapter` | Registriert je Konto eine Route als `LlmAdapter` auf `ctx.llm`: Codex-Modelle, Kontextgrößen, Denkstufen, Bild-Eingabe. |
 | `/codex` | Mensch-Befehl im Web-GUI: `login`, `import`, `status`, `logout`. |
 | `lib/login-cli.mjs` | Derselbe Code ohne laufenden Harness — headless und für den Login ohne Neustart. |
 | `client.js` + `lib/control.js` | Eigene Seite **Settings → OpenAI Codex**: Konto-Id, Tarif, Token-Ablauf und die Knöpfe Anmelden, Aus Codex CLI übernehmen, Abmelden. |
@@ -100,10 +100,20 @@ den Filter auf und bietet den ganzen Katalog an — für Konten, die mehr dürfe
 Ein abgelehntes Modell kommt als `UNSUPPORTED_MODEL` zurück, nicht als
 generische 400.
 
-Bild-Eingabe ist in dieser Fassung abgeschaltet (`readImages: false`): die
-Route führt Text und provider-neutrale Historie. Der Harness ersetzt Bilder in
-einer text-only-Route durch einen Platzhalter, statt die Anfrage scheitern zu
-lassen.
+Bild-Eingabe führt die Route nativ. Der Harness-Content trägt nur eine durable
+Anlage-Referenz; die Bytes holt der Adapter pro Anfrage über den
+Attachment-Dienst, legt sie als pi-ai-`ImageContent` in den Context, und pi-ai
+serialisiert sie über den gemeinsamen Responses-Pfad als `input_image`. Welches
+Modell Bilder annimmt, entscheidet der pi-ai-Katalog **je Modell** — eine
+textliche Route gibt es nur, wenn `readImages: false` gesetzt ist oder das
+Modell im Katalog kein `image` führt (`gpt-5.3-codex-spark` etwa). Bilder in
+Tool-Ergebnissen werden genauso geführt wie solche des Nutzers.
+
+Ein aggregiertes Byte-Budget (`maxRequestImageBytes`, Vorgabe 20 MiB) kürzt
+sehr lange Bildhistorien: die ältesten Bilder weichen einem stabilen
+Platzhalter, der die Anlage benennt, statt die Anfrage scheitern zu lassen.
+`requestImagePixelBudget` und `requestImageMaxBytes` steuern die Normalisierung
+je Bild.
 
 ## Installation
 
@@ -155,7 +165,7 @@ Die Zeile ist über eine spätere Patch-Ebene (das Profil-`cordis.patch.yml`)
             displayName: 'Codex (geschäftlich)'
         transport: sse          # sse | websocket | websocket-cached | auto
         cacheRetention: long    # none | short | long
-        readImages: false
+        readImages: true        # Bild-Eingabe dieser Route
         models:                 # leer = ganzer pi-ai-Katalog
           - gpt-6-astra
           - gpt-5.6-sol
@@ -174,7 +184,7 @@ Auswahlfläche im Model-Picker.
 | `INVALID_CREDENTIAL` mit „provider is not configured“ | Für diesen Account liegt kein Credential im Store. |
 | `UNKNOWN_MODEL` | Das Modell steht nicht im pi-ai-Katalog dieser Installation **oder** ist durch `models` ausgefiltert. |
 | `UNSUPPORTED_MODEL` | Der Katalog kennt das Modell, das Codex-Backend bedient es für dieses Konto aber nicht. |
-| `UNSUPPORTED_CONTENT` | Die Historie enthält Bild-Blöcke; `readImages: false`. |
+| `UNSUPPORTED_CONTENT` | Die Historie enthält Bild-Blöcke, aber `readImages: false` — oder der Attachment-Dienst fehlt in dieser Composition. |
 | `TIMEOUT` | Kein Provider-Ereignis innerhalb von `streamIdleTimeoutMs`. |
 | „Credential-Datei ist für andere Benutzer lesbar“ | `chmod 600` auf `$DSH_HOME/codex-accounts.json`. |
 
