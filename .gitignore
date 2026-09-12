@@ -1,0 +1,19 @@
+# Die Entwicklungssymlinks auf den Harness-Baum. Sie sind maschinenspezifisch
+# und werden von `pnpm add` im Profil ersetzt — nie committen.
+node_modules/
+
+# Laufzeit- und Debug-Artefakte
+*.log
+*.tmp
+.cache/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Der Credential-Store des Plugins liegt absichtlich NICHT hier, sondern unter
+# $DSH_HOME/codex-accounts.json (0600). Diese Zeile ist nur ein Sicherheitsnetz,
+# falls ihn jemand versehentlich hierher kopiert.
+codex-accounts.json
+*.credentials.yaml

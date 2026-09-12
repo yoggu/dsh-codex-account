@@ -1,0 +1,31 @@
+# dsh-codex-account bundle layer.
+#
+# Eine Zeile, zwei Konten. Die Konten liegen in `config.accounts`, weil die
+# Kontowahl eine Eigenschaft dieses Deployments ist und nicht des Plugins:
+# eine spätere Patch-Ebene (das Profil-`cordis.patch.yml`) ersetzt die
+# `config` dieser Zeile vollständig, um ein anderes Konto oder eine andere
+# Routenbezeichnung zu wählen.
+#
+# `codex-personal` ist die Route für das persönliche ChatGPT-Konto. Die
+# Provider-Namen sind frei wählbar; sie sind das, was im Model-Picker steht
+# und was eine Session als `provider` nennt.
+- insert:
+    - id: codex-account
+      name: 'dsh-codex-account'
+      config:
+        accounts:
+          - id: personal
+            provider: codex-personal
+            displayName: 'Codex (persönlich)'
+        transport: sse
+        cacheRetention: long
+        # Nur Modelle, die ein ChatGPT-Konto wirklich bedient. Der pi-ai-Katalog
+        # ist die Obermenge: gpt-5.3-codex-spark, gpt-5.4 und gpt-5.4-mini
+        # stehen darin, werden aber mit "is not supported when using Codex with
+        # a ChatGPT account" abgelehnt. `models: []` bietet alles an.
+        models:
+          - gpt-6-astra
+          - gpt-5.6-terra
+          - gpt-5.6-sol
+          - gpt-5.6-luna
+          - gpt-5.5

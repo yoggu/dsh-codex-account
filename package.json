@@ -1,0 +1,68 @@
+{
+  "name": "dsh-codex-account",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DeepSeek Harness plugin: OpenAI Codex (ChatGPT) accounts over OAuth, with explicit account selection.",
+  "type": "module",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-atomic-write": "^0.1.5-rc.1",
+    "@deepseek-ai/dsh-client-connection": "^0.1.5-rc.1",
+    "@deepseek-ai/dsh-commands": "^0.1.5-rc.1",
+    "@deepseek-ai/dsh-home-paths": "^0.1.5-rc.1",
+    "@deepseek-ai/dsh-llm": "^0.1.5-rc.1",
+    "@deepseek-ai/dsh-timeout": "^0.1.5-rc.1",
+    "@deepseek-ai/schemastery": "^3.18.2",
+    "@earendil-works/pi-ai": "^0.85.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-commands": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-client-connection": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "bin": {
+    "dsh-codex-account": "lib/login-cli.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoggu/dsh-codex-account.git"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "codex",
+    "openai",
+    "oauth",
+    "chatgpt"
+  ]
+}
