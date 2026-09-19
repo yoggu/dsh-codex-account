@@ -169,8 +169,19 @@ Die Zeile ist über eine spätere Patch-Ebene (das Profil-`cordis.patch.yml`)
         models:                 # leer = ganzer pi-ai-Katalog
           - gpt-6-astra
           - gpt-5.6-sol
+        defaultEfforts:         # Startstufe je Modell; ohne Eintrag gilt die
+          gpt-5.6-luna: xhigh   # Vorgabe des Providers ("Default" im Picker)
+          gpt-5.6-sol: high
+          gpt-6-astra: medium
         streamIdleTimeoutMs: 300000
 ```
+
+`defaultEfforts` setzt die Denkstufe, mit der ein Modell in einer neuen Sitzung
+startet. Sie ist eine Eigenschaft des Deployments, nicht des Plugins, und wird
+als `defaultEffort` der Modell-Metadaten beworben: der Model-Picker zeigt sie
+als aktuelle Stufe, und eine Sitzung ohne eigene Wahl sendet sie. Eine Stufe,
+die das Modell nicht führt, meldet der Mount im Log und übergeht sie dann —
+die Route bleibt bedienbar.
 
 Jedes Konto braucht eine eigene `provider`-Route: der Harness adressiert einen
 Modellaufruf über `provider`/`model`, und die Route ist damit die
