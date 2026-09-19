@@ -202,7 +202,7 @@ Auswahlfläche im Model-Picker.
 ## Abhängigkeiten
 
 Alle Laufzeit-Abhängigkeiten sind `peerDependencies` und werden vom
-Harness-Baum gedeckt: `@deepseek-ai/{cordis,dsh-llm,dsh-timeout,dsh-home-paths,dsh-atomic-write,dsh-commands,schemastery}`
+Harness-Baum gedeckt: `@deepseek-ai/{cordis,dsh-attachment,dsh-llm,dsh-timeout,dsh-home-paths,dsh-atomic-write,dsh-commands,schemastery}`
 und `@earendil-works/pi-ai`. `dsh-commands` ist optional — ohne das
 Kommando-Flugzeug lädt das Plugin weiterhin und meldet einen fehlenden Login
 nur ins Log. `@deepseek-ai/dsh-client-connection` ist ebenfalls optional: ohne
@@ -216,9 +216,10 @@ Harness-Baum:
 
 ```sh
 DSH_NM=~/.local/share/mise/installs/node/24.16.0/lib/node_modules/@deepseek-ai/dsh/node_modules
-for p in @earendil-works/pi-ai @deepseek-ai/dsh-llm @deepseek-ai/dsh-timeout \
-         @deepseek-ai/dsh-home-paths @deepseek-ai/dsh-atomic-write \
-         @deepseek-ai/schemastery @deepseek-ai/cordis @deepseek-ai/dsh-commands \
+for p in @earendil-works/pi-ai @deepseek-ai/dsh-attachment @deepseek-ai/dsh-llm \
+         @deepseek-ai/dsh-timeout @deepseek-ai/dsh-home-paths \
+         @deepseek-ai/dsh-atomic-write @deepseek-ai/schemastery \
+         @deepseek-ai/cordis @deepseek-ai/dsh-commands \
          @deepseek-ai/dsh-client-connection; do
   mkdir -p "node_modules/$(dirname "$p")"
   ln -sfn "$DSH_NM/$p" "node_modules/$p"

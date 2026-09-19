@@ -30,6 +30,7 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-attachment": "^0.1.6-alpha.2",
     "@deepseek-ai/dsh-atomic-write": "^0.1.6-alpha.2",
     "@deepseek-ai/dsh-client-connection": "^0.1.6-alpha.2",
     "@deepseek-ai/dsh-commands": "^0.1.6-alpha.2",
@@ -52,6 +53,9 @@
   },
   "bin": {
     "dsh-codex-account": "lib/login-cli.mjs"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\""
   },
   "repository": {
     "type": "git",
