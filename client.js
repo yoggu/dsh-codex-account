@@ -264,8 +264,7 @@ window.__ModuleLoader__.load({
               onAction,
             })),
         h('p', { className: 'codexAccountNote' },
-          'Die Modelle dieser Konten stehen im Modellwähler unter der jeweiligen Route. '
-          + 'Bild-Eingabe ist derzeit abgeschaltet.',
+          'Die Modelle dieser Konten stehen im Modellwähler unter der jeweiligen Route.',
         ),
       )
     }
