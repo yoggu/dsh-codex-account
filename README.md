@@ -2,11 +2,24 @@
 
 Connect one or more OpenAI Codex (ChatGPT subscription) accounts to DSH through OAuth. Each account gets a separate provider route in the model picker. Sign in, inspect account status, import a Codex CLI login or sign out through **Plugins → OpenAI Codex**, the `/codex` command or the local CLI.
 
-## Install from GitHub
+## Install
+
+Install the tagged GitHub release into your DSH Web profile:
 
 ```sh
-dsh plugin --profile web add https://github.com/yoggu/dsh-codex-account.git
+dsh plugin --profile web add 'https://github.com/yoggu/dsh-codex-account.git#v0.1.1'
 ```
+
+Or download the source and link the local checkout:
+
+```sh
+git clone --branch v0.1.1 --depth 1 https://github.com/yoggu/dsh-codex-account.git
+cd dsh-codex-account
+pnpm install
+dsh plugin --profile web add "link:$(pwd)"
+```
+
+Keep a linked checkout in place while the plugin is installed. Use the profile you actually run if it is not `web`.
 
 Restart DSH Web if necessary, then open **Plugins → OpenAI Codex** and sign in. Choose the intended ChatGPT account in the browser. The browser flow uses a localhost callback on port 1455; use the device flow if a browser callback is unavailable. To uninstall: `dsh plugin --profile web remove dsh-codex-account`.
 
