@@ -21,19 +21,18 @@ and without changing a single line in the Harness.
 | `CodexAccountAdapter` | Registers one route per account as an `LlmAdapter` on `ctx.llm`: Codex models, context sizes, reasoning levels, and image input. |
 | `/codex` | Human command in the web GUI: `login`, `import`, `status`, `logout`. |
 | `lib/login-cli.mjs` | The same code without a running Harness—headless and usable for login without a restart. |
-| `client.js` + `lib/control.js` | Dedicated **Settings → OpenAI Codex** page: account ID, plan, token expiration, and the Sign in, Import from Codex CLI, and Sign out buttons. |
+| `client.js` + `lib/control.js` | **Settings → Plugins → OpenAI Codex** bundle page: account ID, plan, token expiration, and Sign in, Import from Codex CLI, and Sign out actions. The token itself never reaches the browser. |
 
 ## The settings page
 
 `client.js` is handwritten in the `window.__ModuleLoader__.load` format,
-without JSX or a bundler, and registers itself in `settings.section` with
-`order: 11`—directly after “Models”.
+without JSX or a bundler, and registers in `plugins.bundle.config`, keyed by
+`dsh-codex-account`. The Plugins page provides the bundle title, icon and
+navigation; this page owns the account-management content.
 
-Why a dedicated page rather than a card in the model list: the slot
-`settings.models.provider-card` is delivered with `entryKey = settingsNs` **per
-directory entry**, so it can only extend routes managed by `settings.yaml`.
-This route is registered by the Composition; it appears in the model picker,
-not in the model list.
+A Codex route is registered by the Composition, not managed by `settings.yaml`.
+It appears in the model picker, not in the model list, so its account controls
+belong on the bundle's own Plugins detail page rather than a per-model card.
 
 The browser communicates with the host through a JSON route—
 `/api/codex-account/control` (GET reads the state, POST triggers actions).
@@ -213,8 +212,8 @@ All runtime dependencies are `peerDependencies` and are provided by the
 Harness tree: `@deepseek-ai/{cordis,dsh-attachment,dsh-llm,dsh-timeout,dsh-home-paths,dsh-atomic-write,dsh-commands,schemastery}`
 and `@earendil-works/pi-ai`. `dsh-commands` is optional—without the command
 layer, the plugin still loads and only logs a missing login. `@deepseek-ai/dsh-client-connection`
-is also optional: without that service, the plugin mounts, just without a
-settings page.
+is also optional: without that service, the plugin mounts without its account
+control route or Plugins-page account controls.
 
 ### Development
 

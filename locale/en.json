@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenAI Codex",
+    "description": "Manage ChatGPT Codex accounts: sign in, import a Codex CLI login, and check token status. Tokens stay on the Host."
+  }
+}

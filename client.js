@@ -196,8 +196,8 @@ window.__ModuleLoader__.load({
       )
     }
 
-    /** Die Einstellungsseite. */
-    function CodexSettings() {
+    /** Die Kontoverwaltung auf der Plugins-Detailseite. */
+    function CodexAccountPage() {
       const [state, setState] = useState(null)
       const [error, setError] = useState('')
       const [busy, setBusy] = useState(false)
@@ -246,7 +246,6 @@ window.__ModuleLoader__.load({
       const last = state === null ? null : state.lastResult
 
       return h('section', { className: 'codexAccount' },
-        h('h2', { className: 'codexAccountTitle' }, 'OpenAI Codex'),
         h('p', { className: 'codexAccountIntro' },
           'Zugang über ein ChatGPT-Abonnement (Plus, Pro, Business). Der Login läuft über die offizielle Autorisierungsseite von OpenAI; '
           + 'der Token wird ausschließlich auf dem Host gespeichert und diese Seite sieht ihn nie.',
@@ -271,26 +270,21 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function CodexAccountEntry({ view }) {
+      if (view === 'summary') {
+        return 'Verwalte OpenAI-Codex-Konten: anmelden, CLI-Zugang importieren und Tokenstatus prüfen.'
+      }
+      return h(CodexAccountPage)
+    }
+
     const inject = ['slots']
 
-    /**
-     * Die Seite in den Einstellungen registrieren.
-     *
-     * `order: 11` setzt sie direkt hinter „Models" (order 10) — dieselbe
-     * Stelle, die auch die Referenz-Plugins wählen. Eine eigene Sektion statt
-     * einer Karte in der Model-Liste, weil jene Liste nur Einträge zeigt, die
-     * aus `settings.yaml` verwaltet werden; diese Route wird von der
-     * Composition registriert.
-     *
-     * @param ctx - der Client-Kontext.
-     */
+    /** Die Kontoverwaltung auf der eigenen Bundle-Seite registrieren. */
     function apply(ctx) {
-      ctx.slots.inject('settings.section', () => ctx.slots.register({
-        name: 'settings.section',
-        id: 'codex',
-        order: 11,
-        label: () => 'OpenAI Codex',
-      }, CodexSettings))
+      ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register({
+        name: 'plugins.bundle.config',
+        key: PLUGIN_ID,
+      }, CodexAccountEntry))
     }
 
     exports.inject = inject

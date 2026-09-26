@@ -25,13 +25,7 @@
         # Bilder annimmt, entscheidet der pi-ai-Katalog je Modell — hier wird
         # nur die Route als Ganzes freigeschaltet.
         readImages: true
-        # Nur Modelle, die ein ChatGPT-Konto wirklich bedient. Der pi-ai-Katalog
-        # ist die Obermenge: gpt-5.3-codex-spark, gpt-5.4 und gpt-5.4-mini
-        # stehen darin, werden aber mit "is not supported when using Codex with
-        # a ChatGPT account" abgelehnt. `models: []` bietet alles an.
-        models:
-          - gpt-6-astra
-          - gpt-5.6-terra
-          - gpt-5.6-sol
-          - gpt-5.6-luna
-          - gpt-5.5
+        # Kein statischer Filter: Die Route übernimmt den vollständigen
+        # pi-ai-Codex-Katalog. Neue Modelle erscheinen automatisch nach einem
+        # Harness/pi-ai-Update. Falls nur verifizierte Modelle angeboten werden
+        # sollen, kann eine spätere Profil-Patch-Ebene `models` setzen.
