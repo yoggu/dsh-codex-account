@@ -51,7 +51,7 @@ The default bundle creates a `personal` account route. To add another, override 
             displayName: Codex (business)
 ```
 
-An override replaces the entry's full `config`. Optional settings include `models` (omit for the installed pi-ai catalog), `defaultEfforts`, `transport`, `readImages` and image-byte limits. The pi-ai catalog is not a guarantee that every model is available to your subscription; unsupported models return `UNSUPPORTED_MODEL`.
+An override replaces the entry's full `config`. Optional settings include `models` (omit for the catalog of the pi-ai version pinned by this plugin), `defaultEfforts`, `transport`, `readImages` and image-byte limits. Update pi-ai deliberately with this plugin and its tests; updating DSH alone does not update this catalog. The pi-ai catalog is not a guarantee that every model is available to your subscription; unsupported models return `UNSUPPORTED_MODEL`.
 
 ## Security
 
