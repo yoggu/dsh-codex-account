@@ -1,6 +1,6 @@
 {
   "name": "dsh-codex-account",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "DeepSeek Harness plugin: OpenAI Codex (ChatGPT) accounts over OAuth, with explicit account selection.",
   "type": "module",
