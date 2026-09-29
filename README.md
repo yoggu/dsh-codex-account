@@ -1,62 +1,87 @@
 # dsh-codex-account
 
-Connect one or more OpenAI Codex (ChatGPT subscription) accounts to DSH through OAuth. Each account gets a separate provider route in the model picker. Sign in, inspect account status, import a Codex CLI login or sign out through **Plugins → OpenAI Codex**, the `/codex` command or the local CLI.
+Manage the **shipped OpenAI Codex / ChatGPT sign-in** in DeepSeek Harness from **Plugins → Codex Account**. Sign in, cancel an authorization attempt, sign out, and make the `openai-codex` provider available in Models — without installing another LLM adapter or keeping a separate credential store.
 
-## Install
+The styled account card and Codex icon appear **only on the Plugins page**, not in the Settings modal. English and German UI text are supported.
 
-Install the tagged GitHub release into your DSH Web profile:
+## Requirements and installation
+
+- Node.js **22.19.0 or newer**.
+- DSH **0.2.x**, with its shipped `@deepseek-ai/dsh-llm-pi-ai` adapter enabled and the authorization, credentials, configuration editor, and authenticated connection services available.
+- Access to the ChatGPT account you want to authorize. Model access depends on that account and the shipped adapter's catalog.
+
+Install the current implementation from the existing GitHub repository:
 
 ```sh
-dsh plugin --profile web add 'https://github.com/yoggu/dsh-codex-account.git#v0.1.3'
+dsh plugin --profile web add 'https://github.com/yoggu/dsh-codex-account.git#main'
 ```
 
-Or download the source and link the local checkout:
+Or clone it and link the local checkout:
 
 ```sh
-git clone --branch v0.1.3 --depth 1 https://github.com/yoggu/dsh-codex-account.git
+git clone https://github.com/yoggu/dsh-codex-account.git
 cd dsh-codex-account
-pnpm install
 dsh plugin --profile web add "link:$(pwd)"
 ```
 
-Keep a linked checkout in place while the plugin is installed. Use the profile you actually run if it is not `web`.
+Use the profile you actually run if it is not `web`. Keep a linked checkout in place while installed. The package ships its client bundle directly; there is no build step or private pi-ai dependency to install. Restart DSH after replacing an installed package version, then refresh the browser.
 
-Restart DSH Web if necessary, then open **Plugins → OpenAI Codex** and sign in. Choose the intended ChatGPT account in the browser. The browser flow uses a localhost callback on port 1455; use the device flow if a browser callback is unavailable. To uninstall: `dsh plugin --profile web remove dsh-codex-account`.
-
-For a local, headless login from a cloned package directory:
+To uninstall the account UI:
 
 ```sh
-node lib/login-cli.mjs login personal --device
-node lib/login-cli.mjs status
-node lib/login-cli.mjs logout personal
+dsh plugin --profile web remove dsh-codex-account
 ```
 
-You can also use `/codex login personal` in DSH Web. `import` adopts `~/.codex/auth.json` but shares a rotating refresh token with Codex CLI; separate browser sign-in avoids that coupling.
+Uninstalling this plugin does **not** sign out, remove the model provider, or delete legacy account data. Use **Sign out** first if you want to remove the saved ChatGPT sign-in on this host.
 
-## Configuration
+## Using the account card
 
-The default bundle creates a `personal` account route. To add another, override the `codex-account` entry in your web profile's `cordis.patch.yml`:
+1. Open **Plugins → Codex Account** and click **Sign in with ChatGPT**.
+2. Follow the OpenAI authorization page and any notices or prompts shown by the shipped adapter. The card updates while authorization is pending; **Cancel sign-in** stops a pending attempt.
+3. After successful authorization, the plugin adds `llm-pi-ai.providers.openai-codex: {}` **only if absent**, preserving other provider settings. Existing provider configuration is left untouched.
+4. Select an `openai-codex` model in DSH when you want to use it. The plugin does not change a running session's selected model or send a model request.
 
-```yaml
-- insert:
-    - id: codex-account
-      name: dsh-codex-account
-      config:
-        accounts:
-          - id: personal
-            provider: codex-personal
-            displayName: Codex (personal)
-          - id: business
-            provider: codex-business
-            displayName: Codex (business)
+If a sign-in is already saved but `openai-codex` is missing, the card shows **Add to Models**. If the post-sign-in configuration update fails, the saved sign-in is kept and the card offers that repair action without repeating OAuth. Enabling the plugin alone does not start authorization or edit provider configuration.
+
+**Sign out** removes only the saved `llm-pi-ai/openai-codex` grant on this host. Model configuration and other credentials are preserved; this is not a global ChatGPT logout. Account mutations are blocked during an active authorization or provider-configuration operation.
+
+## Credential ownership and security
+
+The shipped `llm-pi-ai` adapter owns the OAuth flow and its credential record. This plugin uses the harness authorization service and checks credential **presence only**; it never reads, copies, imports, or returns the saved grant payload. Sign-out uses the credential service's `deleteRecord` operation for the fixed adapter-owned key.
+
+The account card communicates through DSH's authenticated `/api/dsh-codex-account` channel. Provider links are restricted to HTTPS OpenAI/ChatGPT domains, and upstream failures are reduced to safe error codes. Treat access to DSH and the Plugins page as sensitive account administration. Do not share authorization codes, access/refresh tokens, login URLs, credential files, or legacy account stores.
+
+## Migration from earlier plugins
+
+### From `dsh-codex-sign-in`
+
+This is the renamed successor to that plugin, with the same sign-in, sign-out, provider-repair behavior, card, and icon. The credential key remains **`llm-pi-ai/openai-codex`**, so an existing shipped-adapter sign-in does **not** need to be repeated.
+
+Install `dsh-codex-account`, verify its card, then remove the previous package:
+
+```sh
+dsh plugin --profile web remove dsh-codex-sign-in
 ```
 
-An override replaces the entry's full `config`. Optional settings include `models` (omit for the catalog of the pi-ai version pinned by this plugin), `defaultEfforts`, `transport`, `readImages` and image-byte limits. Update pi-ai deliberately with this plugin and its tests; updating DSH alone does not update this catalog. The pi-ai catalog is not a guarantee that every model is available to your subscription; unsupported models return `UNSUPPORTED_MODEL`.
+Refresh the browser after the switch. The package/module name is now `dsh-codex-account`, its bundle entry ID is `codex-account`, and the API route is `/api/dsh-codex-account`.
 
-## Security
+### From `dsh-codex-account` 0.1.x
 
-Credentials live in `$DSH_HOME/codex-accounts.json` and must remain private (`0600`). Do not commit or share that file, `~/.codex/auth.json`, authorization codes, access/refresh tokens or login URLs. The account-management route uses DSH's authenticated `/api` channel; tokens should never be returned to the browser. A localhost callback port must be free for browser login. Treat access to the Plugins page and DSH commands as sensitive account administration.
+**Version 0.2.0 replaces the old custom multi-account LLM adapter.** It manages the single ChatGPT sign-in owned by the shipped `llm-pi-ai` adapter instead. The old `accounts` configuration, custom `codex-personal` / `codex-business` request routes, `/codex` commands, local login CLI, Codex CLI import, and account/token-detail readouts are no longer provided.
 
-## Tests and license
+- Remove old `id: codex-account` configuration overrides containing `accounts`, `models`, `transport`, or other custom-adapter options. The new bundle requires no account configuration.
+- Choose the shipped `openai-codex` route for future requests; old custom-route sessions may require changing their selected model.
+- An old 0.1.x login is **not** automatically imported into the shipped adapter. Sign in through the new card if the shipped credential is absent.
+- The legacy `$DSH_HOME/codex-accounts.json` store and `~/.codex/auth.json` are **not read or deleted**. Removing old source code does not remove those credentials. Keep them private if retained.
+- Older releases and their source remain available in this repository's Git history and existing `v0.1.x` tags.
 
-`npm test` runs the local test suite when the Harness peer dependencies are available. MIT; see [LICENSE](LICENSE).
+## Development and tests
+
+```sh
+npm test
+npm pack --dry-run
+```
+
+The offline tests cover renamed package/client/route identity, authorization notices and prompts, automatic provider addition and repair, sign-out isolation and idempotency, busy-operation guards, safe failure handling, and the Plugins-only card. They do not contact OpenAI or modify real credentials.
+
+MIT; see [LICENSE](<LICENSE>).

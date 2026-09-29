@@ -12,8 +12,8 @@ node_modules/
 .idea/
 *.swp
 
-# Der Credential-Store des Plugins liegt absichtlich NICHT hier, sondern unter
-# $DSH_HOME/codex-accounts.json (0600). Diese Zeile ist nur ein Sicherheitsnetz,
-# falls ihn jemand versehentlich hierher kopiert.
+# Legacy 0.1.x account stores and credential files must never enter this repo.
+# The current plugin delegates credential ownership to the shipped llm-pi-ai
+# adapter and does not keep its own store. Retain this migration safety net.
 codex-accounts.json
 *.credentials.yaml
