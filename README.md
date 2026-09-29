@@ -10,16 +10,16 @@ The styled account card and Codex icon appear **only on the Plugins page**, not 
 - DSH **0.2.x**, with its shipped `@deepseek-ai/dsh-llm-pi-ai` adapter enabled and the authorization, credentials, configuration editor, and authenticated connection services available.
 - Access to the ChatGPT account you want to authorize. Model access depends on that account and the shipped adapter's catalog.
 
-Install the current implementation from the existing GitHub repository:
+Install the latest tagged GitHub release:
 
 ```sh
-dsh plugin --profile web add 'https://github.com/yoggu/dsh-codex-account.git#main'
+dsh plugin --profile web add 'https://github.com/yoggu/dsh-codex-account.git#v0.2.0'
 ```
 
 Or clone it and link the local checkout:
 
 ```sh
-git clone https://github.com/yoggu/dsh-codex-account.git
+git clone --branch v0.2.0 --depth 1 https://github.com/yoggu/dsh-codex-account.git
 cd dsh-codex-account
 dsh plugin --profile web add "link:$(pwd)"
 ```
